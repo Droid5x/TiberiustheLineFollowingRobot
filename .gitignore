@@ -1,6 +1,4 @@
 
-*.cpp
-
 libraries/AdafruitMotorShield/Adafruit_MotorShield.h
 
 libraries/AdafruitMotorShield/examples/Accel_ConstantSpeed/Accel_ConstantSpeed.ino
@@ -26,3 +24,7 @@ libraries/AdafruitMotorShield/utility/Adafruit_PWMServoDriver.h
 libraries/AdafruitMotorShield/utility/license.txt
 
 libraries/readme.txt
+
+libraries/AdafruitMotorShield/Adafruit_MotorShield.cpp
+
+libraries/AdafruitMotorShield/utility/Adafruit_PWMServoDriver.cpp
