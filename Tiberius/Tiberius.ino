@@ -87,7 +87,7 @@ void loop() {
         //rmb = FastRotate
       }  
     } else {
-       if ((lsensor <> lls) || (rsensor <> lrs)) {
+       if ((lsensor != lls) || (rsensor != lrs) || (farleftsensor != flls) || (farrightsensor != lrs)) {
           // 'It's not a damage in path, I really lost the path
           // mustturn = 1
           // if (Rsensor <> lrs) then mustturnleft = 0 
