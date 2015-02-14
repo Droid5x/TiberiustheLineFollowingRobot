@@ -20,11 +20,12 @@ int SensorTable[5];
 
 // Sensor flags
 bool Sensors[] = {0,0,0,0,0};
-bool FLSV = false;
-bool LSV  = false;
-bool MSV = false;
-bool RSV = false;
-bool FRSV = false;
+/*FLSV = Sensors[0];
+  LSV  = Sensors[1];
+  MSV = Sensors[2];
+  RSV = Sensors[3];
+  FRSV = Sensors[4]; */
+bool on_line = false;
 
 // LED light
 int ledPin = 13;
@@ -83,13 +84,14 @@ void loop() {
 
   
   // Main comparisons
-  if (((LSV != MSV) && (RSV != MSV)) || ((FLSV != MSV) && (FRSV != MSV))) {
+  if (((Sensors[1]; != Sensors[2]) && (Sensors[3] != Sensors[2])) || ((Sensors[0]; != Sensors[2]) && (Sensors[4] != Sensors[2]))) {
     // ON LINE. MOVE FORWARD FAST
     // move left motor forward
     // move right motor forward
     RightMotor->run(FORWARD);
     LeftMotor->run(FORWARD);
     Serial.println("Onward!");
+    on_line = true;
   }
   else {
     Serial.println("Where are we going again?");
