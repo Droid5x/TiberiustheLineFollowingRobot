@@ -23,7 +23,9 @@ bool Sensors[] = {0,0,0,0,0};
    MSV  = Sensors[2];
    RSV  = Sensors[3];
    FRSV = Sensors[4]; */
-bool on_line = false;
+bool online = false;
+bool mustturn = false;
+bool mustturnleft = false;
 
 // LED light
 int ledPin = 13;
@@ -51,10 +53,8 @@ void setup() {
 //==============================================================================================
 void loop() {
   updateSensors();
-  // heyo this is where the main code goes isn't this cool
 
-  
-  // Main comparisons
+  // Main Logic
   if (((Sensors[1]; != Sensors[2]) && (Sensors[3] != Sensors[2])) || ((Sensors[0]; != Sensors[2]) && (Sensors[4] != Sensors[2]))) {
     // ON LINE. MOVE FORWARD FAST
     // move left motor forward
@@ -62,10 +62,39 @@ void loop() {
     RightMotor->run(FORWARD);
     LeftMotor->run(FORWARD);
     Serial.println("Onward!");
-    on_line = true;
+    online = true;
+    mustturn = false;
   }
   else {
     Serial.println("Where are we going again?");
+    //'Save sensors state at the begining
+    if (online = true) {
+        //lls = lsensor
+        //lrs = rsensor
+        // lms = msensor
+        online = false;
+    }
+    if (mustturn = true) {
+      if (mustturnleft = true) {
+        //lmf = 0
+        //lmb = FastRotate
+        //rmf = 1
+        //rmb = 0
+      } else {
+        //lmf = 1
+        //lmb = 0
+        //rmf = 0
+        //rmb = FastRotate
+      }  
+    } else {
+       if ((lsensor <> lls) || (rsensor <> lrs)) {
+          // 'It's not a damage in path, I really lost the path
+          // mustturn = 1
+          // if (Rsensor <> lrs) then mustturnleft = 0 
+          // if (Lsensor <> lls) then mustturnleft = 1
+          // 'FastRotate = 0
+          // 'if (MSensor = lms) then FastRotate = 1*/
+    }
   }
 }
 
