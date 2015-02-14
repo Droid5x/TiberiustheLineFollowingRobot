@@ -7,6 +7,8 @@ Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 // Or, create it with a different I2C address (say for stacking)
 // Adafruit_MotorShield AFMS = Adafruit_MotorShield(0x61);
 
+// Hi Mark
+
 // Sensor pins from left to right. indices 0 to 4:
 int SensorPins[] = {0, 1, 2, 3, 4};
 
