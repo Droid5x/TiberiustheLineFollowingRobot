@@ -7,8 +7,6 @@ Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 // Or, create it with a different I2C address (say for stacking)
 // Adafruit_MotorShield AFMS = Adafruit_MotorShield(0x61);
 
-// Hi Mark
-
 // Sensor pins from left to right. indices 0 to 4:
 int SensorPins[] = {0, 1, 2, 3, 4};
 
@@ -20,11 +18,11 @@ int SensorTable[5];
 
 // Sensor flags
 bool Sensors[] = {0,0,0,0,0};
-/*FLSV = Sensors[0];
-  LSV  = Sensors[1];
-  MSV = Sensors[2];
-  RSV = Sensors[3];
-  FRSV = Sensors[4]; */
+/* FLSV = Sensors[0];
+   LSV  = Sensors[1];
+   MSV  = Sensors[2];
+   RSV  = Sensors[3];
+   FRSV = Sensors[4]; */
 bool on_line = false;
 
 // LED light
@@ -42,35 +40,7 @@ void calibrateSensors();  // Calibrates sensors on runtime
 // write a function that refreshes them every tick
 // since those values are global, it would just reread the data 
 
-//------------------------------------------------------
-// FORWARD
-// RightMotor->run(FORWARD);
-// LeftMotor->run(FORWARD);
-
-// STOP
-// initiate a for loop that slows down
-// right stops
-// left stops
-// if this is just a gap in the line, then at some point it'll cross back over black.
-// So then at this point stop the stopping algorithm and switch to forward.
-
-// SLIGHT TURN RIGHT
-// change speed of right motor in half??
-// left motor stays forward
-
-// HARD TURN RIGHT
-// right motor stops
-// left motor stays forward
-
-// SLIGHT TURN LEFT
-// change speed of left motor in half??
-// right motor stays forward
-
-// HARD TURN LEFT
-// left motor stops
-// right motor stays forward
-//------------------------------------------------------
-
+//==============================================================================================
 // Setup is what starts up when the code is refreshed. So this will be the calibration
 void setup() {
   Serial.begin(9600);  // Open a serial communications channel for debuf info
@@ -78,6 +48,7 @@ void setup() {
   calibrateSensors();
 }
 
+//==============================================================================================
 void loop() {
   updateSensors();
   // heyo this is where the main code goes isn't this cool
@@ -98,6 +69,7 @@ void loop() {
   }
 }
 
+//==============================================================================================
 void updateSensors(){
   refreshSensors();   // get the new analog values from each sensor
   for (int i = 0; i < 5; i++){
@@ -107,20 +79,16 @@ void updateSensors(){
       Sensors[i] = true;
     }
   }
-  // Translate sensors array to independent bools:
-  bool FLSV = Sensors[0];
-  bool LSV  = Sensors[1];
-  bool MSV = Sensors[2];
-  bool RSV = Sensors[3];
-  bool FRSV = Sensors[4];
 }
 
+//==============================================================================================
 void refreshSensors(){
   for (int i = 0; i < 5; i++){
     SensorValues[i] = analogRead(SensorPins[i]);
   }
 }
 
+//==============================================================================================
 void calibrateSensors(){
   //------------------------------------------------------
   // Calibration
@@ -152,6 +120,7 @@ void calibrateSensors(){
   // Maybe we should add a buzzer that beeps once the values have been taken?
 }
 
+//==============================================================================================
 /* CODE TO BUILD OFF OF...
 main
    
@@ -197,3 +166,32 @@ main
         endif        
     endif
 }*/
+
+//------------------------------------------------------
+// FORWARD
+// RightMotor->run(FORWARD);
+// LeftMotor->run(FORWARD);
+
+// STOP
+// initiate a for loop that slows down
+// right stops
+// left stops
+// if this is just a gap in the line, then at some point it'll cross back over black.
+// So then at this point stop the stopping algorithm and switch to forward.
+
+// SLIGHT TURN RIGHT
+// change speed of right motor in half??
+// left motor stays forward
+
+// HARD TURN RIGHT
+// right motor stops
+// left motor stays forward
+
+// SLIGHT TURN LEFT
+// change speed of left motor in half??
+// right motor stays forward
+
+// HARD TURN LEFT
+// left motor stops
+// right motor stays forward
+//------------------------------------------------------
