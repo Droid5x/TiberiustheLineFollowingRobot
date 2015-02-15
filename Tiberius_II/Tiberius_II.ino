@@ -4,11 +4,26 @@
 //  Contact: techbitar at gmail dot com
 
 
+#include <Adafruit_MotorShield.h>
 #include <QTRSensors.h>
-#include <AFMotor.h>
+<<<<<<< HEAD
+#include <Adafruit_MotorShield.h>
 
-AF_DCMotor motor1(1, MOTOR12_8KHZ ); // PIN 11 - create motor #1 pwm
-AF_DCMotor motor2(2, MOTOR12_8KHZ ); // PIN 3 - create motor #2 pwm
+// Create the motor shield object with the default I2C address
+Adafruit_MotorShield mShield = Adafruit_MotorShield(); 
+// Motors
+Adafruit_DCMotor *RightMotor = mShield.getMotor(1);
+Adafruit_DCMotor *LeftMotor = mSheild.getMotor(2);
+=======
+
+Adafruit_MotorShield AFMS = Adafruit_MotorShield();
+
+Adafruit_DCMotor *motor1 = AFMS.getMotor(1);
+Adafruit_DCMotor *motor2 = AFMS.getMotor(2);
+
+// AF_DCMotor motor1(1, MOTOR12_8KHZ ); // PIN 11 - create motor #1 pwm
+// AF_DCMotor motor2(2, MOTOR12_8KHZ ); // PIN 3 - create motor #2 pwm
+>>>>>>> FETCH_HEAD
 
 // Change the values below to suit your robot's motors, weight, wheel type, etc.
 #define KP .2
@@ -18,12 +33,12 @@ AF_DCMotor motor2(2, MOTOR12_8KHZ ); // PIN 3 - create motor #2 pwm
 #define M1_MAX_SPEED 70
 #define M2_MAX_SPEED 70
 #define MIDDLE_SENSOR 3
-#define NUM_SENSORS  5      // number of sensors used
+#define NUM_SENSORS  6      // number of sensors used
 #define TIMEOUT       2500  // waits for 2500 us for sensor outputs to go low
-#define EMITTER_PIN   2     // emitter is controlled by digital pin 2
-#define DEBUG 0 // set to 1 if serial debug output needed
+#define EMITTER_PIN   8     // emitter is controlled by digital pin 8
+#define DEBUG 1             // set to 1 if serial debug output needed
 
-PololuQTRSensorsRC qtrrc((unsigned char[]) {  18,17,16,15,14} ,NUM_SENSORS, TIMEOUT, EMITTER_PIN);
+QTRSensorsRC qtrrc((unsigned char[]) {  2,3,4,5,6,7} ,NUM_SENSORS, TIMEOUT, EMITTER_PIN);
 
 unsigned int sensorValues[NUM_SENSORS];
 

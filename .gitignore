@@ -28,3 +28,21 @@ libraries/readme.txt
 libraries/AdafruitMotorShield/Adafruit_MotorShield.cpp
 
 libraries/AdafruitMotorShield/utility/Adafruit_PWMServoDriver.cpp
+
+libraries/QTRSensors/LICENSE.txt
+
+libraries/QTRSensors/QTRSensors/examples/QTRAExample/QTRAExample.ino
+
+libraries/QTRSensors/QTRSensors/examples/QTRRCExample/QTRRCExample.ino
+
+libraries/QTRSensors/QTRSensors/examples/QTRARawValuesExample/QTRARawValuesExample.ino
+
+libraries/QTRSensors/QTRSensors/examples/QTRRCRawValuesExample/QTRRCRawValuesExample.ino
+
+libraries/QTRSensors/QTRSensors/keywords.txt
+
+libraries/QTRSensors/QTRSensors/QTRSensors.cpp
+
+libraries/QTRSensors/QTRSensors/QTRSensors.h
+
+libraries/QTRSensors/README.textile
