@@ -11,17 +11,21 @@ Adafruit_DCMotor *LeftMotor = motor_shield.getMotor(2);		// On port 2
 int motor_speed = 0;
 
 void setup() {
-	motor_shield.begin();		// At default frequency of 1.6 KHz
-	Serial.begin(9600); 		// Start serial connection at 9600 baud
+  motor_shield.begin();		// At default frequency of 1.6 KHz
+  Serial.begin(9600); 		// Start serial connection at 9600 baud
 }
 
 void loop(){
-	if (Serial.read() == 'w'){
-		motor_speed += 10;
-	} else if (Serial.read() == 's'){
-		motor_speed -= 10;
-	}
-	Serial.println(motor_speed);
-	RightMotor->setSpeed(motor_speed);
-	LeftMotor->setSpeed(motor_speed);
+  if (Serial.read() == 's'){
+    motor_speed -= 10;
+  }
+  delay(1);
+  if (Serial.read() == 'w'){
+    motor_speed += 10;
+  }
+  Serial.println(motor_speed);
+  RightMotor->setSpeed(motor_speed);
+  LeftMotor->setSpeed(motor_speed);
+  RightMotor->run(BACKWARD);
+  delay(10);
 }
