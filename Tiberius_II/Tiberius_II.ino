@@ -11,8 +11,8 @@
 // Create the motor shield object with the default I2C address
 Adafruit_MotorShield mShield = Adafruit_MotorShield(); 
 // Motors
-Adafruit_DCMotor *RightMotor = mShield.getMotor(1);
-Adafruit_DCMotor *LeftMotor = mShield.getMotor(2);
+Adafruit_DCMotor *motor1 = mShield.getMotor(1);
+Adafruit_DCMotor *motor2 = mShield.getMotor(2);
 
 
 // Change the values below to suit your robot's motors, weight, wheel type, etc.
