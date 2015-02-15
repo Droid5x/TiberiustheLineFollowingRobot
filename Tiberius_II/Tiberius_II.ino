@@ -16,10 +16,10 @@ Adafruit_DCMotor *motor2 = mShield.getMotor(2);
 
 
 // Change the values below to suit your robot's motors, weight, wheel type, etc.
-#define KP .2
+#define KP 2
 #define KD 5
-#define M1_DEFAULT_SPEED 180
-#define M2_DEFAULT_SPEED 180
+#define M1_DEFAULT_SPEED 140
+#define M2_DEFAULT_SPEED 140
 #define M1_MAX_SPEED 255
 #define M2_MAX_SPEED 255
 #define MIDDLE_SENSOR 4
@@ -28,18 +28,22 @@ Adafruit_DCMotor *motor2 = mShield.getMotor(2);
 #define EMITTER_PIN   8     // emitter is controlled by digital pin 8
 #define DEBUG 1             // set to 1 if serial debug output needed
 
-QTRSensorsRC qtrrc((unsigned char[]) {  2,3,4,5,6} ,NUM_SENSORS, TIMEOUT, EMITTER_PIN);
+QTRSensorsRC qtrrc((unsigned char[]) {2,3,4,5,6} ,NUM_SENSORS, TIMEOUT, EMITTER_PIN);
 
 unsigned int sensorValues[NUM_SENSORS];
 
 void setup()
 {
-  delay(1000);
-  manual_calibration(); 
-  set_motors(0,0);
   if (DEBUG){
     Serial.begin(9600);
   }
+  mShield.begin();
+  delay(1000);
+  manual_calibration(); 
+  set_motors(0,0);
+  delay(1000);
+  set_motors(255, 255);
+  delay(1000);
 }
 
 int lastError = 0;
@@ -72,10 +76,11 @@ void set_motors(int motor1speed, int motor2speed)
   if (motor2speed > M2_MAX_SPEED ) motor2speed = M2_MAX_SPEED; // limit top speed
   if (motor1speed < 0) motor1speed = 0; // keep motor above 0
   if (motor2speed < 0) motor2speed = 0; // keep motor speed above 0
-  motor1->setSpeed(motor1speed);     // set motor speed
-  motor2->setSpeed(motor2speed);     // set motor speed
+  motor1->setSpeed(motor1speed);//motor1speed);     // set motor speed
+  motor2->setSpeed(motor2speed);//motor2speed);     // set motor speed
   motor1->run(FORWARD);  
   motor2->run(FORWARD);
+  delay(10);
   if (DEBUG) {
     Serial.print("Motor 1 Speed: ");
     Serial.println(motor1speed);
