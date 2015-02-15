@@ -3,7 +3,7 @@
 //  Based on sample code provided by Pololu.com
 //  Contact: techbitar at gmail dot com
 
-
+#include <Wire.h>
 #include <Adafruit_MotorShield.h>
 #include <QTRSensors.h>
 
@@ -28,7 +28,7 @@ Adafruit_DCMotor *motor2 = AFMS.getMotor(2);
 #define EMITTER_PIN   2     // emitter is controlled by digital pin 2
 #define DEBUG 0 // set to 1 if serial debug output needed
 
-PololuQTRSensorsRC qtrrc((unsigned char[]) {  18,17,16,15,14} ,NUM_SENSORS, TIMEOUT, EMITTER_PIN);
+QTRSensorsRC qtrrc((unsigned char[]) {18,17,16,15,14}, NUM_SENSORS, TIMEOUT, EMITTER_PIN);
 
 unsigned int sensorValues[NUM_SENSORS];
 
@@ -66,10 +66,10 @@ void set_motors(int motor1speed, int motor2speed)
   if (motor2speed > M2_MAX_SPEED ) motor2speed = M2_MAX_SPEED; // limit top speed
   if (motor1speed < 0) motor1speed = 0; // keep motor above 0
   if (motor2speed < 0) motor2speed = 0; // keep motor speed above 0
-  motor1.setSpeed(motor1speed);     // set motor speed
-  motor2.setSpeed(motor2speed);     // set motor speed
-  motor1.run(FORWARD);  
-  motor2.run(FORWARD);
+  motor1->setSpeed(motor1speed);     // set motor speed
+  motor2->setSpeed(motor2speed);     // set motor speed
+  motor1->run(FORWARD);  
+  motor2->run(FORWARD);
 }
 
 
