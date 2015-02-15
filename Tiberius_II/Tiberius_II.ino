@@ -4,11 +4,16 @@
 //  Contact: techbitar at gmail dot com
 
 
+#include <Adafruit_MotorShield.h>
 #include <QTRSensors.h>
-#include <AFMotor.h>
 
-AF_DCMotor motor1(1, MOTOR12_8KHZ ); // PIN 11 - create motor #1 pwm
-AF_DCMotor motor2(2, MOTOR12_8KHZ ); // PIN 3 - create motor #2 pwm
+Adafruit_MotorShield AFMS = Adafruit_MotorShield();
+
+Adafruit_DCMotor *motor1 = AFMS.getMotor(1);
+Adafruit_DCMotor *motor2 = AFMS.getMotor(2);
+
+// AF_DCMotor motor1(1, MOTOR12_8KHZ ); // PIN 11 - create motor #1 pwm
+// AF_DCMotor motor2(2, MOTOR12_8KHZ ); // PIN 3 - create motor #2 pwm
 
 // Change the values below to suit your robot's motors, weight, wheel type, etc.
 #define KP .2
