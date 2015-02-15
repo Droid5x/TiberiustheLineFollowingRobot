@@ -18,17 +18,17 @@ Adafruit_DCMotor *motor2 = mShield.getMotor(2);
 // Change the values below to suit your robot's motors, weight, wheel type, etc.
 #define KP .2
 #define KD 5
-#define M1_DEFAULT_SPEED 50
-#define M2_DEFAULT_SPEED 50
-#define M1_MAX_SPEED 70
-#define M2_MAX_SPEED 70
-#define MIDDLE_SENSOR 3
-#define NUM_SENSORS  6      // number of sensors used
+#define M1_DEFAULT_SPEED 180
+#define M2_DEFAULT_SPEED 180
+#define M1_MAX_SPEED 255
+#define M2_MAX_SPEED 255
+#define MIDDLE_SENSOR 4
+#define NUM_SENSORS  5      // number of sensors used
 #define TIMEOUT       2500  // waits for 2500 us for sensor outputs to go low
 #define EMITTER_PIN   8     // emitter is controlled by digital pin 8
 #define DEBUG 1             // set to 1 if serial debug output needed
 
-QTRSensorsRC qtrrc((unsigned char[]) {  2,3,4,5,6,7} ,NUM_SENSORS, TIMEOUT, EMITTER_PIN);
+QTRSensorsRC qtrrc((unsigned char[]) {  2,3,4,5,6} ,NUM_SENSORS, TIMEOUT, EMITTER_PIN);
 
 unsigned int sensorValues[NUM_SENSORS];
 
@@ -37,6 +37,9 @@ void setup()
   delay(1000);
   manual_calibration(); 
   set_motors(0,0);
+  if (DEBUG){
+    Serial.begin(9600);
+  }
 }
 
 int lastError = 0;
@@ -48,6 +51,9 @@ void loop()
 {
   unsigned int sensors[5];
   int position = qtrrc.readLine(sensors);
+  if (DEBUG) {
+    Serial.println(position);
+  }
   int error = position - 2000;
 
   int motorSpeed = KP * error + KD * (error - lastError);
@@ -70,6 +76,12 @@ void set_motors(int motor1speed, int motor2speed)
   motor2->setSpeed(motor2speed);     // set motor speed
   motor1->run(FORWARD);  
   motor2->run(FORWARD);
+  if (DEBUG) {
+    Serial.print("Motor 1 Speed: ");
+    Serial.println(motor1speed);
+    Serial.print("Motor 2 Speed: ");
+    Serial.println(motor2speed);
+  }
 }
 
 
@@ -83,7 +95,6 @@ void manual_calibration() {
   }
 
   if (DEBUG) { // if true, generate sensor dats via serial output
-    Serial.begin(9600);
     for (int i = 0; i < NUM_SENSORS; i++)
     {
       Serial.print(qtrrc.calibratedMinimumOn[i]);
