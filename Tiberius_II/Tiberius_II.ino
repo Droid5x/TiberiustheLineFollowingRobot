@@ -3,27 +3,18 @@
 //  Based on sample code provided by Pololu.com
 //  Contact: techbitar at gmail dot com
 
+<<<<<<< HEAD
 
 #include <Adafruit_MotorShield.h>
 #include <QTRSensors.h>
-<<<<<<< HEAD
-#include <Adafruit_MotorShield.h>
+#include <Wire.h>
 
 // Create the motor shield object with the default I2C address
 Adafruit_MotorShield mShield = Adafruit_MotorShield(); 
 // Motors
 Adafruit_DCMotor *RightMotor = mShield.getMotor(1);
-Adafruit_DCMotor *LeftMotor = mSheild.getMotor(2);
-=======
+Adafruit_DCMotor *LeftMotor = mShield.getMotor(2);
 
-Adafruit_MotorShield AFMS = Adafruit_MotorShield();
-
-Adafruit_DCMotor *motor1 = AFMS.getMotor(1);
-Adafruit_DCMotor *motor2 = AFMS.getMotor(2);
-
-// AF_DCMotor motor1(1, MOTOR12_8KHZ ); // PIN 11 - create motor #1 pwm
-// AF_DCMotor motor2(2, MOTOR12_8KHZ ); // PIN 3 - create motor #2 pwm
->>>>>>> FETCH_HEAD
 
 // Change the values below to suit your robot's motors, weight, wheel type, etc.
 #define KP .2
@@ -76,10 +67,10 @@ void set_motors(int motor1speed, int motor2speed)
   if (motor2speed > M2_MAX_SPEED ) motor2speed = M2_MAX_SPEED; // limit top speed
   if (motor1speed < 0) motor1speed = 0; // keep motor above 0
   if (motor2speed < 0) motor2speed = 0; // keep motor speed above 0
-  motor1.setSpeed(motor1speed);     // set motor speed
-  motor2.setSpeed(motor2speed);     // set motor speed
-  motor1.run(FORWARD);  
-  motor2.run(FORWARD);
+  motor1->setSpeed(motor1speed);     // set motor speed
+  motor2->setSpeed(motor2speed);     // set motor speed
+  motor1->run(FORWARD);  
+  motor2->run(FORWARD);
 }
 
 
