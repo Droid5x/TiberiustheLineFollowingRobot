@@ -1,9 +1,8 @@
-//  Remixed by Hazim Bitar/Techbitar
-//  Date:Feb 12, 2012
-//  Based on sample code provided by Pololu.com
-//  Contact: techbitar at gmail dot com
-
-<<<<<<< HEAD
+// Authors: Kathryn DiPippo, Mark Blanco and Liam McEneaney
+// 15 February 2015
+// Tiberius II the line-following robot
+// IED Section 3 Line Follower Mini-Project
+//  Based on sample code provided by Pololu.com and Hazim Bitar/Techbitar
 
 #include <Adafruit_MotorShield.h>
 #include <QTRSensors.h>
