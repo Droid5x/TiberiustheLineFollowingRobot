@@ -16,19 +16,19 @@ Adafruit_DCMotor *motor2 = mShield.getMotor(2);
 
 
 // Change the values below to suit your robot's motors, weight, wheel type, etc.
-#define KP 2
-#define KD 5
-#define M1_DEFAULT_SPEED 140
-#define M2_DEFAULT_SPEED 140
+#define KP .8
+#define KD 10
+#define M1_DEFAULT_SPEED 155
+#define M2_DEFAULT_SPEED 155
 #define M1_MAX_SPEED 255
 #define M2_MAX_SPEED 255
 #define MIDDLE_SENSOR 4
-#define NUM_SENSORS  5      // number of sensors used
+#define NUM_SENSORS  8      // number of sensors used
 #define TIMEOUT       2500  // waits for 2500 us for sensor outputs to go low
 #define EMITTER_PIN   8     // emitter is controlled by digital pin 8
 #define DEBUG 1             // set to 1 if serial debug output needed
 
-QTRSensorsRC qtrrc((unsigned char[]) {2,3,4,5,6} ,NUM_SENSORS, TIMEOUT, EMITTER_PIN);
+QTRSensorsRC qtrrc((unsigned char[]) {1,2,3,4,5,6,7} ,NUM_SENSORS, TIMEOUT, EMITTER_PIN);
 
 unsigned int sensorValues[NUM_SENSORS];
 
