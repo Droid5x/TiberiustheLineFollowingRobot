@@ -16,19 +16,19 @@ Adafruit_DCMotor *motor2 = mShield.getMotor(2);
 
 
 // Change the values below to suit your robot's motors, weight, wheel type, etc.
-#define KP .2
-#define KD 7
+#define KP .4
+#define KD 15
 #define M1_DEFAULT_SPEED 190
 #define M2_DEFAULT_SPEED 190
 #define M1_MAX_SPEED 255
 #define M2_MAX_SPEED 255
 #define MIDDLE_SENSOR 4
-#define NUM_SENSORS  6      // number of sensors used
+#define NUM_SENSORS  8      // number of sensors used
 #define TIMEOUT       2500  // waits for 2500 us for sensor outputs to go low
 #define EMITTER_PIN   9     // emitter is controlled by digital pin 8
 #define DEBUG 0             // set to 1 if serial debug output needed
 
-QTRSensorsRC qtrrc((unsigned char[]) {1,2,3,6,7,8} ,NUM_SENSORS, TIMEOUT, EMITTER_PIN);
+QTRSensorsRC qtrrc((unsigned char[]) {1,2,3,4,5,6,7,8} ,NUM_SENSORS, TIMEOUT, EMITTER_PIN);
 
 unsigned int sensorValues[NUM_SENSORS];
 
@@ -58,7 +58,7 @@ void loop()
   if (DEBUG) {
     Serial.println(position);
   }
-  int error = position - 2000;
+  int error = position - 3500;    // Adjusted the value from -2000 to -2500 to change sensor middle
 
   int motorSpeed = KP * error + KD * (error - lastError);
   lastError = error;
@@ -77,7 +77,7 @@ void set_motors(int motor1speed, int motor2speed)
   /*if (motor1speed < 0 && motor2speed < 0){  // If both motors are set to go backwards, set them to default
     motor1speed = M1_DEFAULT_SPEED;
     motor2speed = M2_DEFAULT_SPEED;
-  }*/
+  }
   if (motor1speed < 0) {  //  Go backwards
     motor1speed = abs(motor1speed)*0.25;
     motor1->setSpeed(motor1speed);    // set motor speed
@@ -93,7 +93,17 @@ void set_motors(int motor1speed, int motor2speed)
   } else {                // Else go forwards
     motor2->setSpeed(motor2speed);     // set motor speed
     motor2->run(FORWARD);  
+  }*/
+  if (motor1speed < 0) {  
+    motor1speed = 0;
+  }              
+  if (motor2speed < 0) {
+    motor2speed = 0;  
   }
+  motor1->setSpeed(motor1speed);    
+  motor2->setSpeed(motor2speed);     // set motor speed
+  motor1->run(FORWARD); 
+  motor2->run(FORWARD);
   delay(10);
   if (DEBUG) {
     Serial.print("Motor 1 Speed: ");
@@ -107,7 +117,7 @@ void set_motors(int motor1speed, int motor2speed)
 void manual_calibration() {
 
   int i;
-  for (i = 0; i < 250; i++)  // the calibration will take a few seconds
+  for (i = 0; i < 130; i++)  // the calibration will take a few seconds
   {
     qtrrc.calibrate(QTR_EMITTERS_ON);
     delay(20);
