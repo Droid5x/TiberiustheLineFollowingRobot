@@ -16,19 +16,19 @@ Adafruit_DCMotor *motor2 = mShield.getMotor(2);
 
 
 // Change the values below to suit your robot's motors, weight, wheel type, etc.
-#define KP .8
-#define KD 10
-#define M1_DEFAULT_SPEED 155
-#define M2_DEFAULT_SPEED 155
+#define KP .2
+#define KD 7
+#define M1_DEFAULT_SPEED 190
+#define M2_DEFAULT_SPEED 190
 #define M1_MAX_SPEED 255
 #define M2_MAX_SPEED 255
 #define MIDDLE_SENSOR 4
-#define NUM_SENSORS  8      // number of sensors used
+#define NUM_SENSORS  6      // number of sensors used
 #define TIMEOUT       2500  // waits for 2500 us for sensor outputs to go low
-#define EMITTER_PIN   8     // emitter is controlled by digital pin 8
-#define DEBUG 1             // set to 1 if serial debug output needed
+#define EMITTER_PIN   9     // emitter is controlled by digital pin 8
+#define DEBUG 0             // set to 1 if serial debug output needed
 
-QTRSensorsRC qtrrc((unsigned char[]) {1,2,3,4,5,6,7} ,NUM_SENSORS, TIMEOUT, EMITTER_PIN);
+QTRSensorsRC qtrrc((unsigned char[]) {1,2,3,6,7,8} ,NUM_SENSORS, TIMEOUT, EMITTER_PIN);
 
 unsigned int sensorValues[NUM_SENSORS];
 
@@ -74,12 +74,26 @@ void set_motors(int motor1speed, int motor2speed)
 {
   if (motor1speed > M1_MAX_SPEED ) motor1speed = M1_MAX_SPEED; // limit top speed
   if (motor2speed > M2_MAX_SPEED ) motor2speed = M2_MAX_SPEED; // limit top speed
-  if (motor1speed < 0) motor1speed = 0; // keep motor above 0
-  if (motor2speed < 0) motor2speed = 0; // keep motor speed above 0
-  motor1->setSpeed(motor1speed);//motor1speed);     // set motor speed
-  motor2->setSpeed(motor2speed);//motor2speed);     // set motor speed
-  motor1->run(FORWARD);  
-  motor2->run(FORWARD);
+  /*if (motor1speed < 0 && motor2speed < 0){  // If both motors are set to go backwards, set them to default
+    motor1speed = M1_DEFAULT_SPEED;
+    motor2speed = M2_DEFAULT_SPEED;
+  }*/
+  if (motor1speed < 0) {  //  Go backwards
+    motor1speed = abs(motor1speed)*0.25;
+    motor1->setSpeed(motor1speed);    // set motor speed
+    motor1->run(BACKWARD);  
+  } else {                // Else go forwards
+    motor1->setSpeed(motor1speed);    // set motor speed
+    motor1->run(FORWARD);  
+  }
+  if (motor2speed < 0) {  //  Go backwards
+    motor2speed = abs(motor1speed)*0.25;
+    motor2->setSpeed(motor2speed);     // set motor speed
+    motor2->run(BACKWARD);  
+  } else {                // Else go forwards
+    motor2->setSpeed(motor2speed);     // set motor speed
+    motor2->run(FORWARD);  
+  }
   delay(10);
   if (DEBUG) {
     Serial.print("Motor 1 Speed: ");
