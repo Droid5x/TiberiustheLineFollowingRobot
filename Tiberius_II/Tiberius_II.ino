@@ -11,17 +11,17 @@
 // Create the motor shield object with the default I2C address
 Adafruit_MotorShield mShield = Adafruit_MotorShield(); 
 // Motors
-Adafruit_DCMotor *motor1 = mShield.getMotor(1);
-Adafruit_DCMotor *motor2 = mShield.getMotor(2);
+Adafruit_DCMotor *motor1 = mShield.getMotor(3);
+Adafruit_DCMotor *motor2 = mShield.getMotor(4);
 
 
 // Change the values below to suit your robot's motors, weight, wheel type, etc.
 #define KP .125
 #define KD 1.1
-#define M1_DEFAULT_SPEED 110
-#define M2_DEFAULT_SPEED 110
-#define M1_MAX_SPEED 220
-#define M2_MAX_SPEED 220
+#define M1_DEFAULT_SPEED 90
+#define M2_DEFAULT_SPEED 90
+#define M1_MAX_SPEED 200
+#define M2_MAX_SPEED 200
 #define NUM_SENSORS  8      // number of sensors used
 #define TIMEOUT       2500  // waits for 2500 us for sensor outputs to go low
 #define EMITTER_PIN   9     // emitter is controlled by digital pin 8
