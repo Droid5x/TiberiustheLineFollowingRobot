@@ -4,11 +4,12 @@
 // Create Motor Shield Object:
 Adafruit_MotorShield motor_shield = Adafruit_MotorShield(); 
 // Create an object for each motor:
-Adafruit_DCMotor *RightMotor = motor_shield.getMotor(1);	// On port 1
-Adafruit_DCMotor *LeftMotor = motor_shield.getMotor(2);		// On port 2
+Adafruit_DCMotor *Motor1 = motor_shield.getMotor(4);	// Left
+Adafruit_DCMotor *Motor2 = motor_shield.getMotor(3); // Right
 
 // Motor Speed Variable:
-int motor_speed = 0;
+int motor1_speed = 0;
+int motor2_speed = 0;
 
 void setup() {
   Serial.begin(9600); 		// Start serial connection at 9600 baud
@@ -18,16 +19,24 @@ void setup() {
 
 void loop(){
   if (Serial.read() == 's'){
-    motor_speed -= 10;
+    motor1_speed -= 10;
   }
   delay(1);
   if (Serial.read() == 'w'){
-    motor_speed += 10;
+    motor1_speed +=10;
   }
-  Serial.println(motor_speed);
-  RightMotor->setSpeed(motor_speed);
-  LeftMotor->setSpeed(motor_speed);
-  RightMotor->run(FORWARD);
-  LeftMotor->run(FORWARD);
+  if (Serial.read() == 'e'){
+    motor2_speed += 10;
+  }
+  if (Serial.read() == 'd'){
+    motor2_speed -= 10;
+  }
+  Serial.print(motor1_speed);
+  Serial.print(' ');
+  Serial.println(motor2_speed);
+  Motor1->setSpeed(motor1_speed);
+  Motor2->setSpeed(motor2_speed);
+  Motor1->run(FORWARD);
+  Motor2->run(FORWARD);
   delay(10);
 }
