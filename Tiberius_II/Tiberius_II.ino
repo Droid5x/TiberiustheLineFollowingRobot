@@ -1,6 +1,6 @@
 // Authors: Kathryn DiPippo, Mark Blanco and Liam McEneaney
 // 15 February 2015
-// Tiberius II the line-following robot
+// Tiberius II, the line-following robot
 // IED Section 3 Line Follower Mini-Project
 //  Based on sample code provided by Pololu.com and Hazim Bitar/Techbitar
 
@@ -16,20 +16,24 @@ Adafruit_DCMotor *motor2 = mShield.getMotor(3);    // Right motor (this one was 
 
 
 // Change the values below to suit your robot's motors, weight, wheel type, etc.
-#define KP .1
-#define KD 1.1
-#define M1_DEFAULT_SPEED 80
-#define M2_DEFAULT_SPEED 75
-#define M1_MAX_SPEED 180
-#define M2_MAX_SPEED 175
-#define NUM_SENSORS  8      // number of sensors used
+#define KP .075
+#define KD 0.1
+#define M1_DEFAULT_SPEED 120
+#define M2_DEFAULT_SPEED 118
+#define M1_MAX_SPEED 228
+#define M2_MAX_SPEED 230
+#define NUM_SENSORS  8     // Number of sensors used
 #define TIMEOUT       2500  // waits for 2500 us for sensor outputs to go low
 #define EMITTER_PIN   9     // emitter is controlled by digital pin 8
-#define DEBUG 0             // set to 1 if serial debug output needed
+#define DEBUG 1             // set to 1 if serial debug output needed
 
 QTRSensorsRC qtrrc((unsigned char[]) {3,4,5,6,7,8,9,10} ,NUM_SENSORS, TIMEOUT, EMITTER_PIN);
 
 unsigned int sensorValues[NUM_SENSORS];
+
+// Prototypes:
+int calculateError();  // Returns calculated error
+
 
 void setup()
 {
@@ -40,27 +44,24 @@ void setup()
   delay(1000);
   manual_calibration(); 
   set_motors(0,0);
-  delay(1000);
-  set_motors(255, 255);
-  delay(1000);
 }
 
 int lastError = 0;
-int  last_position = 0;
-int error = 0;
+int last_position = 0;
 
 void loop()
 {
-  unsigned int sensors[5];
-  int position = qtrrc.readLine(sensors);
-  if (DEBUG) {
-    Serial.println(position);
-  }
-  /*if (last_position < 4500 && last_position > 2500 && position == 0){
+  //int position = qtrrc.readLine(sensors);  // <-- MAYBE USE readCalibrated() instead...  
+  //int error = position - 3500;    // Adjusted the value from -2000 to -2500 to change sensor middle
+  int error = calculateError();
+  /*if (abs(last_position - position) > 3000){    // If we just ran off the line, go straight.
     error = 0;
   }*/
-  error = position - 3500;    // Adjusted the value from -2000 to -2500 to change sensor middle
-
+  if (DEBUG) {
+    //Serial.print(position);
+    //Serial.print(' ');
+    Serial.println(error);
+  }
   int motorSpeed = KP * error + KD * (error - lastError);
   lastError = error;
 
@@ -69,7 +70,53 @@ void loop()
 
   // set motor speeds using the two motor speed variables above
   set_motors(leftMotorSpeed, rightMotorSpeed);
-  last_position = position;
+  //last_position = position;
+}
+
+int calculateError(){
+  static bool left = 0;
+  static bool right = 0;
+  unsigned int sensors[5];
+  unsigned long avg = 0;
+  unsigned int sum = 0;
+  qtrrc.readCalibrated(sensors);
+  int position = 0;
+  int error = 0;
+  
+  for(unsigned char i = 0; i < NUM_SENSORS; i++) {
+      int value = sensors[i];
+      // only average in values that are above a noise threshold
+      if(value > 50) {
+          avg += (long)(value) * (i * 1000);
+          sum += value;
+      }
+  }
+
+  if (sum == 0){// If the line has been lost, go straight
+    if (right && left){
+      error = 0;
+    }
+    else if (right){
+      error = 3500;
+    } else {
+      error = -3500;
+    }
+  } else {
+    position = avg/sum;
+    error =  position - 3500;
+  }
+  
+  if (sensors[0] > 50){  // Save old left/right values for next scan
+    left = 1;
+  } else {
+    left = 0;
+  }
+  if (sensors[7] > 50){
+    right = 1;
+  } else {
+    right = 0;
+  }
+  return error;
 }
 
 void set_motors(int motor1speed, int motor2speed)
@@ -125,7 +172,7 @@ void manual_calibration() {
     delay(20);
   }
 
-  if (DEBUG) { // if true, generate sensor dats via serial output
+  if (DEBUG) { // if true, generate sensor data via serial output
     for (int i = 0; i < NUM_SENSORS; i++)
     {
       Serial.print(qtrrc.calibratedMinimumOn[i]);
