@@ -16,12 +16,12 @@ Adafruit_DCMotor *motor2 = mShield.getMotor(3);    // Right motor (this one was 
 
 
 // Change the values below to suit your robot's motors, weight, wheel type, etc.
-#define KP .1
-#define KD 1.1
+#define KP .125
+#define KD 1
 #define M1_DEFAULT_SPEED 80
 #define M2_DEFAULT_SPEED 75
-#define M1_MAX_SPEED 180
-#define M2_MAX_SPEED 175
+#define M1_MAX_SPEED 220
+#define M2_MAX_SPEED 218
 #define NUM_SENSORS  8      // number of sensors used
 #define TIMEOUT       2500  // waits for 2500 us for sensor outputs to go low
 #define EMITTER_PIN   9     // emitter is controlled by digital pin 8
