@@ -16,10 +16,10 @@ Adafruit_DCMotor *motor2 = mShield.getMotor(3);    // Right motor (this one was 
 
 
 // Change the values below to suit your robot's motors, weight, wheel type, etc.
-#define KP .075
-#define KD 0.1
-#define M1_DEFAULT_SPEED 110
-#define M2_DEFAULT_SPEED 108
+#define KP .3
+#define KD .9
+#define M1_DEFAULT_SPEED 90
+#define M2_DEFAULT_SPEED 88
 #define M1_MAX_SPEED 228
 #define M2_MAX_SPEED 230
 #define NUM_SENSORS  8     // Number of sensors used
@@ -97,22 +97,22 @@ int calculateError(){
     right = 0;
   }
 
-  if (sum == 0){// If the line has been lost, go straight
-    if (last_left != left || last_right != right){  // We lost the path
-      if (last_left != left){
-        error = -1000;
-      } else if (last_right != right){
-        error = 1000;
-      }
-    } else {
+  if (sum == 0){// If the line has been lost, go straight (unless it's not a gap...)
+    if (last_left != left && last_right != right){  // We lost the path, TURN!
+      error = 0;
+    }else if (last_left != left){
+      error = -20000;
+    } else if (last_right != right){
+      error = 20000;
+    }else {
       error = 0;
     }
   } else {
     position = avg/sum;
     error =  position - 3500;
+    last_left = left;
+    last_right = right;
   }
-  last_left = left;
-  last_right = right;
   return error;
 }
 
