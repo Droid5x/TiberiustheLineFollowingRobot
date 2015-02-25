@@ -29,8 +29,6 @@ Adafruit_DCMotor *motor2 = mShield.getMotor(3);    // Right motor (this one was 
 
 QTRSensorsRC qtrrc((unsigned char[]) {3,4,5,6,7,8,9,10} ,NUM_SENSORS, TIMEOUT, EMITTER_PIN);
 
-unsigned int sensorValues[NUM_SENSORS];
-
 // Prototypes:
 int calculateError();  // Returns calculated error
 
@@ -73,9 +71,49 @@ int calculateError(){
   unsigned int sensors[NUM_SENSORS];
   unsigned long avg = 0;
   unsigned int sum = 0;
-  int position = 0;
-  int error = 0;
+  int error = readSensors(sensors, sum, avg);  
+  if (sensors[0]){  // Save old left/right values for next scan
+    left = 1;
+  } else {
+    left = 0;
+  }
+  if (sensors[NUM_SENSORS-1] > 50){
+    right = 1;
+  } else {
+    right = 0;
+  }
+  if (abs(error) < 500){
+  if (sensors[0] && (!sensors[1] || !sensors[2]) && (sensors[3] || sensors[4])){ // This is probably a hard left...
+    for (int i = 0; i < 50; i++){
+      set_motors(-0.25*M1_MAX_SPEED, 0.75*M2_MAX_SPEED);
+      delay(3);
+    }
+    return 0;
+  } else if (sensors[7] && (!sensors[5] || !sensors[6]) && (sensors[3] || sensors[4])){ // This is a hard right
+    for (int i = 0; i < 50; i++){
+      set_motors(0.75*M1_MAX_SPEED, -0.25*M2_MAX_SPEED);
+      delay(3);
+    }
+    return 0;
+  }}
+  if (sum == 0){// If the line has been lost
+    if (last_left != left && last_right == right){// We lost the path, TURN!
+      error = -20000;
+    } else if (last_right != right && last_left == left){// We lost the path, TURN!
+      error = 20000;
+    }else {    // Otherwise it's a gap, so go straight
+      error = 0;
+    }
+   // Add acute handling here...
   
+  }else {
+    last_left = left;
+    last_right = right;
+  }
+  return error;
+}
+
+int readSensors(unsigned int * sensors, unsigned int & sum, unsigned long & avg){
   qtrrc.readCalibrated(sensors);
   for(unsigned char i = 0; i < NUM_SENSORS; i++) {
       int value = sensors[i];
@@ -88,35 +126,7 @@ int calculateError(){
         sensors[i] = 0;
       }
   }
-
-  if (sensors[0]){  // Save old left/right values for next scan
-    left = 1;
-  } else {
-    left = 0;
-  }
-  if (sensors[NUM_SENSORS-1] > 50){
-    right = 1;
-  } else {
-    right = 0;
-  }
-
-  if (sum == 0){// If the line has been lost
-    if (last_left != left && last_right == right){// We lost the path, TURN!
-      error = -20000;
-    } else if (last_right != right && last_left == left){// We lost the path, TURN!
-      error = 20000;
-    }else {    // Otherwise it's a gap, so go straight
-      error = 0;
-    }
-   // Add acute handling here...
-  
-  }else {
-    position = avg/sum;
-    error =  position - 3500;
-    last_left = left;
-    last_right = right;
-  }
-  return error;
+  return avg/sum - 3500;
 }
 
 void set_motors(int motor1speed, int motor2speed) {
@@ -157,14 +167,12 @@ void set_motors(int motor1speed, int motor2speed) {
  } else {
   motor2->run(FORWARD);
  }
- // Note: delay did't seem necessary...
 }
 
 
 void manual_calibration() {
-
   int i;
-  for (i = 0; i < 130; i++)  // the calibration will take a few seconds
+  for (i = 0; i < 80; i++)  // the calibration will take a few seconds
   {
     qtrrc.calibrate(QTR_EMITTERS_ON);
     delay(10);
