@@ -16,8 +16,8 @@ Adafruit_DCMotor *motor2 = mShield.getMotor(3);    // Right motor (this one was 
 
 
 // Change the values below to suit your robot's motors, weight, wheel type, etc.
-#define KP .125
-#define KD .11
+#define KP .3
+#define KD .9
 #define M1_DEFAULT_SPEED 90
 #define M2_DEFAULT_SPEED 88
 #define M1_MAX_SPEED 228
@@ -28,6 +28,8 @@ Adafruit_DCMotor *motor2 = mShield.getMotor(3);    // Right motor (this one was 
 #define DEBUG 0             // set to 1 if serial debug output needed
 
 QTRSensorsRC qtrrc((unsigned char[]) {3,4,5,6,7,8,9,10} ,NUM_SENSORS, TIMEOUT, EMITTER_PIN);
+
+unsigned int sensorValues[NUM_SENSORS];
 
 // Prototypes:
 int calculateError();  // Returns calculated error
@@ -68,52 +70,12 @@ int calculateError(){
   static bool last_right = 0;
   bool right = 0;
   bool left = 0;
-  unsigned int sensors[NUM_SENSORS];
+  unsigned int sensors[5];
   unsigned long avg = 0;
   unsigned int sum = 0;
-  int error = readSensors(sensors, sum, avg);  
-  if (sensors[0]){  // Save old left/right values for next scan
-    left = 1;
-  } else {
-    left = 0;
-  }
-  if (sensors[NUM_SENSORS-1] > 50){
-    right = 1;
-  } else {
-    right = 0;
-  }
-  if (abs(error) < 500){
-  if (sensors[0] && (!sensors[1] || !sensors[2]) && (sensors[3] || sensors[4])){ // This is probably a hard left...
-    for (int i = 0; i < 50; i++){
-      set_motors(-0.25*M1_MAX_SPEED, 0.75*M2_MAX_SPEED);
-      delay(3);
-    }
-    return 0;
-  } else if (sensors[7] && (!sensors[5] || !sensors[6]) && (sensors[3] || sensors[4])){ // This is a hard right
-    for (int i = 0; i < 50; i++){
-      set_motors(0.75*M1_MAX_SPEED, -0.25*M2_MAX_SPEED);
-      delay(3);
-    }
-    return 0;
-  }}
-  if (sum == 0){// If the line has been lost
-    if (last_left != left && last_right == right){// We lost the path, TURN!
-      error = -20000;
-    } else if (last_right != right && last_left == left){// We lost the path, TURN!
-      error = 20000;
-    }else {    // Otherwise it's a gap, so go straight
-      error = 0;
-    }
-   // Add acute handling here...
+  int position = 0;
+  int error = 0;
   
-  }else {
-    last_left = left;
-    last_right = right;
-  }
-  return error;
-}
-
-int readSensors(unsigned int * sensors, unsigned int & sum, unsigned long & avg){
   qtrrc.readCalibrated(sensors);
   for(unsigned char i = 0; i < NUM_SENSORS; i++) {
       int value = sensors[i];
@@ -121,61 +83,70 @@ int readSensors(unsigned int * sensors, unsigned int & sum, unsigned long & avg)
       if(value > 50) {
           avg += (long)(value) * (i * 1000);
           sum += value;
-          sensors[i] = 1;
-      } else {
-        sensors[i] = 0;
       }
   }
-  return avg/sum - 3500;
+
+  if (sensors[0] > 50){  // Save old left/right values for next scan
+    left = 1;
+  } else {
+    left = 0;
+  }
+  if (sensors[7] > 50){
+    right = 1;
+  } else {
+    right = 0;
+  }
+
+  if (sum == 0){// If the line has been lost, go straight (unless it's not a gap...)
+    if (last_left != left && last_right != right){  // We lost the path, TURN!
+      error = 0;
+    }else if (last_left != left){
+      error = -20000;
+    } else if (last_right != right){
+      error = 20000;
+    }else {
+      error = 0;
+    }
+  } else {
+    position = avg/sum;
+    error =  position - 3500;
+    last_left = left;
+    last_right = right;
+  }
+  return error;
 }
 
-void set_motors(int motor1speed, int motor2speed) {
-  bool m1back = 0;
-  bool m2back = 0;
-  if (motor1speed > M1_MAX_SPEED ) {// limit top speed and reverse other motor is necessary
-    motor1speed = M1_MAX_SPEED;
-    if (motor2speed < 0){
-      motor2speed = abs(motor2speed);
-      if (motor2speed > M2_MAX_SPEED){
-        motor2speed = M2_MAX_SPEED;
-      }
-      m2back = 1;
-    }
-  } else if (motor2speed > M2_MAX_SPEED ) motor2speed = M2_MAX_SPEED; // limit top speed
+void set_motors(int motor1speed, int motor2speed)
+{
+  if (motor1speed > M1_MAX_SPEED ) motor1speed = M1_MAX_SPEED; // limit top speed
+  if (motor2speed > M2_MAX_SPEED ) motor2speed = M2_MAX_SPEED; // limit top speed
   if (motor1speed < 0) {  
-    motor1speed = abs(motor1speed);
-    if (motor1speed > M1_MAX_SPEED){
-      motor1speed = M1_MAX_SPEED;
-    }
-    m1back = 1;
-  }              
-  if (!m2back && motor2speed < 0) {
-    motor2speed = 0;  
-  }
-  if (!m1back && motor1speed < 0) {
     motor1speed = 0;
+  }              
+  if (motor2speed < 0) {
+    motor2speed = 0;  
   }
   motor1->setSpeed(motor1speed);    
   motor2->setSpeed(motor2speed);     // set motor speed
-  if (m1back){
-    motor1->run(BACKWARD);
-  } else {
-    motor1->run(FORWARD);
-  }
- if (m2back) {
-  motor2->run(BACKWARD);
- } else {
+  motor1->run(FORWARD); 
   motor2->run(FORWARD);
- }
+  delay(10);
+  if (DEBUG) {
+    Serial.print("Motor 1 Speed: ");
+    Serial.println(motor1speed);
+    Serial.print("Motor 2 Speed: ");
+    Serial.println(motor2speed);
+  }
 }
 
 
 void manual_calibration() {
+
   int i;
-  for (i = 0; i < 80; i++)  // the calibration will take a few seconds
+  for (i = 0; i < 130; i++)  // the calibration will take a few seconds
   {
     qtrrc.calibrate(QTR_EMITTERS_ON);
-    delay(10);
+    delay(20);
   }
 
   if (DEBUG) { // if true, generate sensor data via serial output
