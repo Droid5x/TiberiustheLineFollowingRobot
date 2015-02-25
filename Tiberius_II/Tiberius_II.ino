@@ -16,8 +16,8 @@ Adafruit_DCMotor *motor2 = mShield.getMotor(3);    // Right motor (this one was 
 
 
 // Change the values below to suit your robot's motors, weight, wheel type, etc.
-#define KP .3
-#define KD .9
+#define KP .125
+#define KD .11
 #define M1_DEFAULT_SPEED 90
 #define M2_DEFAULT_SPEED 88
 #define M1_MAX_SPEED 228
@@ -70,7 +70,7 @@ int calculateError(){
   static bool last_right = 0;
   bool right = 0;
   bool left = 0;
-  unsigned int sensors[5];
+  unsigned int sensors[NUM_SENSORS];
   unsigned long avg = 0;
   unsigned int sum = 0;
   int position = 0;
@@ -83,31 +83,34 @@ int calculateError(){
       if(value > 50) {
           avg += (long)(value) * (i * 1000);
           sum += value;
+          sensors[i] = 1;
+      } else {
+        sensors[i] = 0;
       }
   }
 
-  if (sensors[0] > 50){  // Save old left/right values for next scan
+  if (sensors[0]){  // Save old left/right values for next scan
     left = 1;
   } else {
     left = 0;
   }
-  if (sensors[7] > 50){
+  if (sensors[NUM_SENSORS-1] > 50){
     right = 1;
   } else {
     right = 0;
   }
 
-  if (sum == 0){// If the line has been lost, go straight (unless it's not a gap...)
-    if (last_left != left && last_right != right){  // We lost the path, TURN!
-      error = 0;
-    }else if (last_left != left){
+  if (sum == 0){// If the line has been lost
+    if (last_left != left && last_right == right){// We lost the path, TURN!
       error = -20000;
-    } else if (last_right != right){
+    } else if (last_right != right && last_left == left){// We lost the path, TURN!
       error = 20000;
-    }else {
+    }else {    // Otherwise it's a gap, so go straight
       error = 0;
     }
-  } else {
+   // Add acute handling here...
+  
+  }else {
     position = avg/sum;
     error =  position - 3500;
     last_left = left;
@@ -116,27 +119,45 @@ int calculateError(){
   return error;
 }
 
-void set_motors(int motor1speed, int motor2speed)
-{
-  if (motor1speed > M1_MAX_SPEED ) motor1speed = M1_MAX_SPEED; // limit top speed
-  if (motor2speed > M2_MAX_SPEED ) motor2speed = M2_MAX_SPEED; // limit top speed
+void set_motors(int motor1speed, int motor2speed) {
+  bool m1back = 0;
+  bool m2back = 0;
+  if (motor1speed > M1_MAX_SPEED ) {// limit top speed and reverse other motor is necessary
+    motor1speed = M1_MAX_SPEED;
+    if (motor2speed < 0){
+      motor2speed = abs(motor2speed);
+      if (motor2speed > M2_MAX_SPEED){
+        motor2speed = M2_MAX_SPEED;
+      }
+      m2back = 1;
+    }
+  } else if (motor2speed > M2_MAX_SPEED ) motor2speed = M2_MAX_SPEED; // limit top speed
   if (motor1speed < 0) {  
-    motor1speed = 0;
+    motor1speed = abs(motor1speed);
+    if (motor1speed > M1_MAX_SPEED){
+      motor1speed = M1_MAX_SPEED;
+    }
+    m1back = 1;
   }              
-  if (motor2speed < 0) {
+  if (!m2back && motor2speed < 0) {
     motor2speed = 0;  
+  }
+  if (!m1back && motor1speed < 0) {
+    motor1speed = 0;
   }
   motor1->setSpeed(motor1speed);    
   motor2->setSpeed(motor2speed);     // set motor speed
-  motor1->run(FORWARD); 
-  motor2->run(FORWARD);
-  delay(10);
-  if (DEBUG) {
-    Serial.print("Motor 1 Speed: ");
-    Serial.println(motor1speed);
-    Serial.print("Motor 2 Speed: ");
-    Serial.println(motor2speed);
+  if (m1back){
+    motor1->run(BACKWARD);
+  } else {
+    motor1->run(FORWARD);
   }
+ if (m2back) {
+  motor2->run(BACKWARD);
+ } else {
+  motor2->run(FORWARD);
+ }
+ // Note: delay did't seem necessary...
 }
 
 
@@ -146,7 +167,7 @@ void manual_calibration() {
   for (i = 0; i < 130; i++)  // the calibration will take a few seconds
   {
     qtrrc.calibrate(QTR_EMITTERS_ON);
-    delay(20);
+    delay(10);
   }
 
   if (DEBUG) { // if true, generate sensor data via serial output
